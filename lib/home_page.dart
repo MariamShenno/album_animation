@@ -1,6 +1,7 @@
 
 
 import 'package:album_animation/album_model.dart';
+import 'package:album_animation/core/responsive.dart';
 import 'package:album_animation/disc_header.dart';
 import 'package:flutter/material.dart';
 
@@ -8,14 +9,16 @@ import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
           // Animated Header
           SliverPersistentHeader(
-            delegate: MyDiscHeader(),
+            delegate: MyDiscHeader(isTablet: Responsive.isTablet(context)),
             pinned: true,
           ),
           // content of album

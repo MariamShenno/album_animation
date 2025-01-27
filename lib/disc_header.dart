@@ -12,35 +12,35 @@ const _minHeadrerExtent = kToolbarHeight * 2;
 const _minTopMarginAlbum = 20.0;
 const _maxTopMarginAlbum = 160.0;
 const _minTopMarginAlbumTablet = 20.0;
-const _maxTopMarginAlbumTablet = 100.0;
+const _maxTopMarginAlbumTablet = 200.0;
 
 const _minTopMarginDisk = 35.0;
 const _maxTopMarginDisk = 160.0;
 const _minTopMarginDiskTablet = 30.0;
-const _maxTopMarginDiskTablet = 100.0;
+const _maxTopMarginDiskTablet = 200.0;
 const _minLeftMarginDisk = 35.0;
 const _maxLeftMarginDisk = 100.0;
 
 const _minTopMarginText = 20.0;
 const _maxTopMarginText = 80.0;
 const _minTopMarginTextTablet = 20.0;
-const _maxTopMarginTextTablet = 40.0;
+const _maxTopMarginTextTablet = 60.0;
 
 const _minLeftMarginText = 130.0;
 const _maxLeftMarginText = 150.0;
 const _minLeftMarginTextTablet = 250.0;
-const _maxLeftMarginTextTablet = 300.0;
+const _maxLeftMarginTextTablet = 400.0;
 
 //Height
 const _minHeightAlbum = 80.0;
 const _maxHeighAlbum = 150.0;
 const _minHeightAlbumTablet = 95.0;
-const _maxHeighAlbumTablet = 210.0;
+const _maxHeighAlbumTablet = 250.0;
 
 const _minHeightDisk = 50.0;
 const _maxHeightDisk = 150.0;
 const _minHeightDiskTablet = 65.0;
-const _maxHeightDiskTablet = 210.0;
+const _maxHeightDiskTablet = 250.0;
 
 // Size
 const _minSubTitleSize = 16.0;
@@ -54,6 +54,8 @@ const _minTitleSizeTablet = 30.0;
 const _maxTitleSizeTablet = 40.0;
 
 class MyDiscHeader extends SliverPersistentHeaderDelegate {
+  final bool isTablet;
+  MyDiscHeader({required this.isTablet});
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -71,10 +73,11 @@ class MyDiscHeader extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => _maxHeaderExtent;
+  double get maxExtent => isTablet ? _maxHeaderExtent * 1.5 : _maxHeaderExtent;
 
   @override
-  double get minExtent => _minHeadrerExtent;
+  double get minExtent =>
+      isTablet ? _minHeadrerExtent * 1.5 : _minHeadrerExtent;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
@@ -111,31 +114,35 @@ class _AnimatedTitle extends StatelessWidget {
             .clamp(_minSubTitleSizeTablet, _maxSubTitleSizeTablet)
         : (_maxSubTitleSize * (1 - percent))
             .clamp(_minSubTitleSize, _maxSubTitleSize);
+    final opacity = (percent / 0.5).clamp(0.0, 1.0);
     return Positioned(
       top: topMargin,
       left: leftMarginText,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          Text(
-            AlbumModel.currentAlbum.albumArtist,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: titleSize,
-              letterSpacing: -0.5,
+      child: Opacity(
+        opacity: 1 - opacity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            Text(
+              AlbumModel.currentAlbum.albumArtist,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: titleSize,
+                letterSpacing: -0.5,
+              ),
             ),
-          ),
-          // SubTitle
-          Text(
-            AlbumModel.currentAlbum.albumName,
-            style: TextStyle(
-              fontSize: subTitleSize,
-              letterSpacing: -0.5,
-              color: Colors.grey,
+            // SubTitle
+            Text(
+              AlbumModel.currentAlbum.albumName,
+              style: TextStyle(
+                fontSize: subTitleSize,
+                letterSpacing: -0.5,
+                color: Colors.grey,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -154,7 +161,8 @@ class _DiskImage extends StatelessWidget {
             .clamp(_minTopMarginDiskTablet, _maxTopMarginDiskTablet)
         : (_maxTopMarginDisk * (1 - percent))
             .clamp(_minTopMarginDisk, _maxTopMarginDisk);
-    final leftMarginDisk = (_maxLeftMarginDisk * (1 - percent))
+    final left = (percent / 0.5).clamp(0.0, 1.0);
+    final leftMarginDisk = (_maxLeftMarginDisk * (1 - left))
         .clamp(_minLeftMarginDisk, _maxLeftMarginDisk);
 
     final heightDisk = isTablet
